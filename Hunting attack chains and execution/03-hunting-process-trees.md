@@ -16,7 +16,7 @@ EventID=1
 | table tree
 ```
 
-![Screenshot placeholder: initial process tree output](screenshots/1c-process-tree-basic.png)
+![Screenshot placeholder: initial process tree output](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/b3a770b96ce48c064e167ad223855f2bb1b08a3f/Hunting%20attack%20chains%20and%20execution/media/process%20tree/step1.png)
 
 This produced a tree of every process on the host and what spawned it, including the malicious branch:
 
@@ -50,7 +50,7 @@ EventID=1
 
 I based this query on Splunk's PSTree app documentation to add process IDs, timestamps, and command lines directly into the tree output, rather than just process names.
 
-![Screenshot placeholder: enriched process tree with timestamps and command lines](screenshots/1c-process-tree-enriched.png)
+![Screenshot placeholder: enriched process tree with timestamps and command lines](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/192d11b59eb08d19e159c5cb880f76bbd5bc48ce/Hunting%20attack%20chains%20and%20execution/media/process%20tree/step2.png)
 
 ### Step 3: Isolate the malicious branch
 
@@ -83,7 +83,7 @@ THybZSNv.exe (10228) 2025-06-11 22:28:11
         |--- mimi.exe (9296) 2025-06-11 22:31:33
 ```
 
-![Screenshot placeholder: isolated malicious process tree branch](screenshots/1c-process-tree-malicious-branch.png)
+![Screenshot placeholder: isolated malicious process tree branch](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/192d11b59eb08d19e159c5cb880f76bbd5bc48ce/Hunting%20attack%20chains%20and%20execution/media/process%20tree/step3.png)
 
 ## Key Findings
 
