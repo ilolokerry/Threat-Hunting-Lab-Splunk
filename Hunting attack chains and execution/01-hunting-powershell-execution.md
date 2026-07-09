@@ -105,19 +105,74 @@ EventID=3 DestinationIp=10.0.2.6
 
 This confirmed the outbound network connection to `10[.]0[.]2[.]6` over port 80.
 
-## Key Findings
 
+### Step 7: Pivot on the process ID to reconstruct what happened next
+ 
+The `Invoke-WebRequest` command's parent process was `cmd.exe`, so I pulled its process ID (3916) and searched for every event tied to it.
+ 
+```spl
+index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational"
+EventID=1 ParentProcessId=3916
+| table _time, host, user, Image, CommandLine
+| sort -_time
+```
+ 
+![Screenshot placeholder: full list of commands run under process ID 3916](screenshots/1a-parentprocessid-3916-commands.png)
+ 
+This single process ID unlocked the entire attack sequence, spanning reconnaissance, persistence, defense evasion, and credential theft:
+ 
+| Time | Image | Command |
+|---|---|---|
+| 22:28:37 | whoami.exe | whoami /all |
+| 22:28:44 | ipconfig.exe | ipconfig /all |
+| 22:29:46 | powershell.exe | Invoke-WebRequest download of dghelper.dll |
+| 22:30:38 | reg.exe | reg add Run key persistence for dghelper.dll |
+| 22:30:48 | wevtutil.exe | wevtutil cl Security |
+| 22:30:54 | wevtutil.exe | wevtutil cl System |
+| 22:30:58 | wevtutil.exe | wevtutil cl Application |
+| 22:31:19 | certutil.exe | certutil -urlcache -split -f download of mimi.exe |
+| 22:31:33 | mimi.exe | executed |
+ 
+### Step 8: Find the parent of the cmd.exe process
+ 
+```spl
+index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational"
+EventID=1 ProcessId=3916
+| table ParentImage, ParentProcessGuid
+| sort -_time
+```
+ 
+This traced `cmd.exe` (process ID 3916) back to a parent process of `C:\Windows\THybZSNv.exe` — an unfamiliar binary sitting directly under `C:\Windows\`, which is not a normal install location for a legitimate application.
+ 
+### Step 9: Investigate THybZSNv.exe and confirm it's malicious
+ 
+```spl
+index="aa15cbf9" source="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational"
+EventID=1 Image="C:\Windows\THybZSNv.exe"
+| table _time, host, user, Image, CommandLine, ParentImage, MD5
+| sort -_time
+```
+ 
+![Screenshot placeholder: THybZSNv.exe process event with hash](screenshots/1a-thybzsnv-hash.png)
+ 
+This showed `THybZSNv.exe` spawned from `C:\Windows\System32\services.exe`, with an MD5 hash of `6983F7001DE10F4D19FC2D794C3EB534`. I ran the hash against VirusTotal, which confirmed it as a 32-bit remote execution tool — malware, not a legitimate system binary.
+ 
+## Key Findings
+ 
 - The initial cluster of PowerShell activity from `CompatTelRunner.exe` is legitimate Microsoft compatibility telemetry, not malicious.
 - A separate PowerShell command used `Invoke-WebRequest` to download `dghelper.dll` from `hxxp://10[.]0[.]2[.]6`, saving it to `C:\Windows\System32\`.
 - The download was confirmed at the network layer, with a Sysmon Event ID 3 connection to `10[.]0[.]2[.]6` over port 80.
-- The parent process of this PowerShell activity was `cmd.exe`, which became the starting point for the command-line hunt in the next report.
-
+- Pivoting on the parent `cmd.exe` process ID (3916) exposed the full attack sequence: reconnaissance (`whoami`, `ipconfig`), persistence (Registry Run key), defense evasion (event log clearing), and a second tool download (`certutil` pulling `mimi.exe`).
+- The `cmd.exe` process itself was spawned by `C:\Windows\THybZSNv.exe`, an unfamiliar binary sitting directly under `C:\Windows\`.
+- A VirusTotal lookup on `THybZSNv.exe`'s MD5 hash (`6983F7001DE10F4D19FC2D794C3EB534`) confirmed it as a 32-bit remote execution tool — the true root of the attack chain.
 ## Key Takeaways
-
+ 
 - Not every PowerShell event is malicious — checking the parent process and the binary's file path helps separate normal system behavior from attacker activity.
 - Filtering out known-noisy processes (like compatibility or telemetry scans) makes it much easier to spot the one command that matters.
 - Correlating a suspicious command with network connection logs is what turns a suspicious PowerShell line into a confirmed indicator of compromise.
-
+- Pivoting on a process ID rather than a single event is what turns one suspicious command into a full attack timeline.
+- Hash lookups against VirusTotal are a fast way to confirm whether an unfamiliar binary is malicious before spending more time investigating it.
 ## Conclusion
-
-I identified and confirmed a malicious PowerShell-based file download (T1059.001) by filtering Sysmon and PowerShell operational logs down to a single suspicious command and validating it against network connection events.
+ 
+I traced a malicious PowerShell-based file download (T1059.001) back through its parent `cmd.exe` process to its true root cause, `THybZSNv.exe`, and confirmed it as malware via a VirusTotal hash lookup.
+ 
