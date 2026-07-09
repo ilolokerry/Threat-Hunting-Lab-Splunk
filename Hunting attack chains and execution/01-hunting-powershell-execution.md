@@ -36,7 +36,7 @@ This surfaced three PowerShell binary paths:
 - C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe
 - C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
 
-![Screenshot placeholder: PowerShell process creation search results](screenshots/1a-powershell-process-search.png)
+![Screenshot placeholder: PowerShell process creation search results](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step2.png)
 
 ### Step 3: Cut out noise
 
@@ -47,6 +47,7 @@ EventID=1 Image=*\powershell.exe AND ParentImage!="C:\Windows\explorer.exe"
 ```
 
 I excluded the Splunk Universal Forwarder's PowerShell helper as expected noise, which left 6 events tied to `C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe`. A 32-bit PowerShell process running on a 64-bit host can be normal, but it's also worth flagging as suspicious depending on context.
+![step3](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step3.png)
 
 ### Step 4: Add fidelity to the events
 
@@ -57,7 +58,7 @@ EventID=1 Image=*\powershell.exe AND ParentImage!="C:\Windows\explorer.exe"
 | sort -_time
 ```
 
-![Screenshot placeholder: PowerShell events table with command lines and parent processes](screenshots/1a-powershell-events-table.png)
+![Screenshot placeholder: PowerShell events table with command lines and parent processes](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step4.png)
 
 Most of the results traced back to `C:\Windows\System32\CompatTelRunner.exe` as the parent process, running a script that checks driver `.inf` files against a compatibility pattern. I researched this process and confirmed it is Microsoft's Compatibility Telemetry system, executed from its correct path — this activity looks like a legitimate compatibility scan rather than malicious behavior.
 
@@ -86,7 +87,7 @@ EventID=4103
 | stats count by Payload
 ```
 
-![Screenshot placeholder: filtered PowerShell operational log payloads](screenshots/1a-powershell-payload-filtered.png)
+![Screenshot placeholder: filtered PowerShell operational log payloads](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step%205.png)
 
 This confirmed the `Invoke-WebRequest` call, its `-Uri` parameter pointing to `hxxp://10[.]0[.]2[.]6/dghelper[.]dll`, and its `-OutFile` parameter writing to `C:\Windows\System32\dghelper.dll`.
 
@@ -95,6 +96,7 @@ This confirmed the `Invoke-WebRequest` call, its `-Uri` parameter pointing to `h
 ```spl
 index="aa15cbf9" dghelper.dll
 ```
+![step6.1](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step6.1.png)
 
 Nine events referenced `dghelper.dll`, giving me a way to check whether other hosts had contact with the same file or infrastructure.
 
@@ -105,6 +107,7 @@ EventID=3 DestinationIp=10.0.2.6
 
 This confirmed the outbound network connection to `10[.]0[.]2[.]6` over port 80.
 
+![step6.2](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step6.2.png)
 
 ### Step 7: Pivot on the process ID to reconstruct what happened next
  
@@ -117,7 +120,7 @@ EventID=1 ParentProcessId=3916
 | sort -_time
 ```
  
-![Screenshot placeholder: full list of commands run under process ID 3916](screenshots/1a-parentprocessid-3916-commands.png)
+![Screenshot placeholder: full list of commands run under process ID 3916](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step7.png)
  
 This single process ID unlocked the entire attack sequence, spanning reconnaissance, persistence, defense evasion, and credential theft:
  
@@ -141,6 +144,7 @@ EventID=1 ProcessId=3916
 | table ParentImage, ParentProcessGuid
 | sort -_time
 ```
+![step8](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step8.png)
  
 This traced `cmd.exe` (process ID 3916) back to a parent process of `C:\Windows\THybZSNv.exe` — an unfamiliar binary sitting directly under `C:\Windows\`, which is not a normal install location for a legitimate application.
  
@@ -152,8 +156,9 @@ EventID=1 Image="C:\Windows\THybZSNv.exe"
 | table _time, host, user, Image, CommandLine, ParentImage, MD5
 | sort -_time
 ```
+![Screenshot placeholder: THybZSNv.exe process event with hash](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step9.png)
  
-![Screenshot placeholder: THybZSNv.exe process event with hash](screenshots/1a-thybzsnv-hash.png)
+![Screenshot placeholder: THybZSNv.exe process event with hash](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/7894c6a4e70b3f20fbb594854ef42dc5f5315d39/Hunting%20attack%20chains%20and%20execution/media/powershell/step9.2.png)
  
 This showed `THybZSNv.exe` spawned from `C:\Windows\System32\services.exe`, with an MD5 hash of `6983F7001DE10F4D19FC2D794C3EB534`. I ran the hash against VirusTotal, which confirmed it as a 32-bit remote execution tool — malware, not a legitimate system binary.
  
