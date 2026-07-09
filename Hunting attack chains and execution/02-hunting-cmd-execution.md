@@ -25,7 +25,7 @@ NewProcessName="*\cmd.exe" AND ParentProcessName!="C:\Windows\explorer.exe"
 | table _time, Computer, SubjectUserName, NewProcessName, NewProcessId, CommandLine, ParentProcessName, ProcessId
 ```
 
-![Screenshot placeholder: cmd.exe process creation event](screenshots/1b-cmd-process-creation.png)
+![Screenshot placeholder: cmd.exe process creation event](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/b3a770b96ce48c064e167ad223855f2bb1b08a3f/Hunting%20attack%20chains%20and%20execution/media/cmd/step1.png)
 
 The result showed `cmd.exe` running under `WKS-4F1D.avongate.local`, with a parent process of `C:\Windows\THybZSNv.exe` — an unfamiliar binary sitting directly in `C:\Windows\`, which is not a normal location for a legitimate application.
 
@@ -50,7 +50,7 @@ index="aa15cbf9" source="xmlwineventlog:security" EventID=4688
 | sort - _time
 ```
 
-![Screenshot placeholder: full list of child processes spawned by cmd.exe](screenshots/1b-cmd-child-processes.png)
+![Screenshot placeholder: full list of child processes spawned by cmd.exe](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/b3a770b96ce48c064e167ad223855f2bb1b08a3f/Hunting%20attack%20chains%20and%20execution/media/cmd/step3.png)
 
 Searching for every process with a `ParentProcessId` of 3916 exposed the full sequence of commands run from that `cmd.exe` session, in order:
 
