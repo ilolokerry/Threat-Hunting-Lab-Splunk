@@ -33,8 +33,6 @@ TargetObject="*\Software\Microsoft\Windows\CurrentVersion\Run*"
 | table _time, Computer, User, TargetObject, Details, Image
 ```
 
-![Screenshot placeholder: Run key registry events table](screenshots/1a-run-key-events.png)
-
 This surfaced several entries:
 
 | Time | User | TargetObject | Details | Image |
@@ -57,7 +55,7 @@ TargetObject="*\Software\Microsoft\Windows\CurrentVersion\Run*"
 | table _time, Computer, User, TargetObject, Details, Image, ProcessGuid
 ```
 
-![Screenshot placeholder: Run key events with ProcessGuid](screenshots/1a-run-key-processguid.png)
+![Screenshot placeholder: Run key events with ProcessGuid](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/141da97d6558f536e1ef2d726ce6da0ecdb16511/02-Hunting%20For%20Persistence/media/runkeys/step3.png)
 
 Adding `ProcessGuid` gave each registry-writing process a unique identifier, which I could use to verify exactly which process performed each write, rather than relying on the image path alone.
 
@@ -76,7 +74,7 @@ TargetObject="*\Software\Microsoft\Windows\CurrentVersion\Run*"
 
 I used the `ProcessGuid` values from the previous search as a subsearch to pull full process creation details for each process that wrote to a Run key, including company attribution and file hashes.
 
-![Screenshot placeholder: process verification table with hashes](screenshots/1a-process-verification.png)
+![Screenshot placeholder: process verification table with hashes](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/141da97d6558f536e1ef2d726ce6da0ecdb16511/02-Hunting%20For%20Persistence/media/runkeys/step4.png)
 
 This confirmed two unique binaries and hashes:
 
