@@ -30,7 +30,8 @@ EventID=13
 
 I used `isnotnull(MITRE_ID)` to filter down to only registry events that matched a known persistence path in the lookup table. This returned 7 events.
 
-![Screenshot placeholder: lookup-enriched registry events with MITRE IDs](screenshots/1b-lookup-enriched-events.png)
+![Screenshot placeholder: lookup-enriched registry events with MITRE IDs](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/813c2889ac74ceec865bb742547e4896384fcf34/02-Hunting%20For%20Persistence/media/loookups/step1.png)
+![step1.1](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/813c2889ac74ceec865bb742547e4896384fcf34/02-Hunting%20For%20Persistence/media/loookups/step1.2.png)
 
 | Time | User | TargetObject | Image / Details | MITRE_ID | Description |
 |---|---|---|---|---|---|
@@ -64,7 +65,7 @@ EventID=1 "dghelper.dll"
 | sort -time
 ```
 
-![Screenshot placeholder: dghelper.dll execution and download chain](screenshots/1b-dghelper-execution-chain.png)
+![Screenshot placeholder: dghelper.dll execution and download chain](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/813c2889ac74ceec865bb742547e4896384fcf34/02-Hunting%20For%20Persistence/media/loookups/step3.png)
 
 This confirmed the full chain leading up to the persistence entry:
 
@@ -83,7 +84,7 @@ EventID=1 Image="*\reg.exe" AND ParentImage="*\cmd.exe"
 | table _time, host, user, Image, CommandLine, ParentImage, ParentCommandLine, IntegrityLevel
 | sort -time
 ```
-
+![step4](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/813c2889ac74ceec865bb742547e4896384fcf34/02-Hunting%20For%20Persistence/media/loookups/step4.png)
 This confirmed the same `reg.exe` persistence event, run as `SYSTEM` with `System` integrity level, spawned from `cmd.exe`.
 
 ### Step 5: Cross-check with a registry-focused query
@@ -95,7 +96,7 @@ EventID=13
 | table _time, Computer, user, TargetObject, Image, ProcessGuid
 | sort -time
 ```
-
+![step5](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/813c2889ac74ceec865bb742547e4896384fcf34/02-Hunting%20For%20Persistence/media/loookups/step5.png)
 This gave the same result from the registry event side, confirming the `HKLM\SOFTWARE\WOW6432Node\...\Run\Updater` key was written by `reg.exe` with a matching `ProcessGuid`.
 
 ## Key Findings
