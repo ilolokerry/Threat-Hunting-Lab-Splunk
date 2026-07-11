@@ -13,7 +13,7 @@ index="aa15cbf9" source="xmlwineventlog:security" EventID=1102
 | table _time, Computer, Channel, EventID, ClientProcessId, SubjectUserName, name
 ```
 
-![Screenshot placeholder: Security log 1102 audit log cleared event](screenshots/1c-security-1102-cleared.png)
+![Screenshot placeholder: Security log 1102 audit log cleared event](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/813c2889ac74ceec865bb742547e4896384fcf34/02-Hunting%20For%20Persistence/media/defense%20invasion/step1.png)
 
 | Time | Computer | Channel | EventID | ClientProcessId | SubjectUserName | name |
 |---|---|---|---|---|---|---|
@@ -29,6 +29,7 @@ ProcessId=3892
 earliest="06/11/2025:22:30:45" latest="06/11/2025:22:30:55"
 | table _time, host, user, Image, CommandLine, ParentImage, ParentCommandLine, IntegrityLevel
 ```
+![step2](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/32522a402c7b466150c43713a46577df496f2141/02-Hunting%20For%20Persistence/media/defense%20invasion/step2.png)
 
 Narrowing the Sysmon search to the exact process ID and a tight time window around the log-clear event identified the responsible process:
 
@@ -38,6 +39,7 @@ Narrowing the Sysmon search to the exact process ID and a tight time window arou
 
 Parent process: `C:\Windows\SysWOW64\cmd.exe`, running at `System` integrity level.
 
+
 ### Step 3: Confirm with System log clearing (Event ID 104)
 
 ```spl
@@ -45,7 +47,7 @@ index="aa15cbf9" source="xmlwineventlog:system" EventID=104
 | table _time, Computer, Channel, EventID, Object, action
 ```
 
-![Screenshot placeholder: System log 104 cleared events](screenshots/1c-system-104-cleared.png)
+![Screenshot placeholder: System log 104 cleared events](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/32522a402c7b466150c43713a46577df496f2141/02-Hunting%20For%20Persistence/media/defense%20invasion/step3.png)
 
 | Time | Computer | Channel | EventID | Object | action |
 |---|---|---|---|---|---|
@@ -63,7 +65,7 @@ index="aa15cbf9" source="xmlwineventlog:microsoft-windows-sysmon/operational" Ev
 | sort -_time
 ```
 
-![Screenshot placeholder: full wevtutil log-clearing sequence](screenshots/1c-wevtutil-clear-sequence.png)
+![Screenshot placeholder: full wevtutil log-clearing sequence](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/32522a402c7b466150c43713a46577df496f2141/02-Hunting%20For%20Persistence/media/defense%20invasion/step4.png)
 
 This confirmed the full log-clearing sequence, all run as `SYSTEM` from the same parent `cmd.exe` process:
 
