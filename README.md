@@ -26,14 +26,11 @@ This project documents a hands-on threat hunting exercise conducted in Splunk. I
 threat-hunting-lab-splunk/
 ├── README.md
 ├── part1-attack-chain-and-execution/
-│   ├── tracing-an-attack-chain.md
-│   ├── hunting-execution-artifacts.md
 │   ├── hunting-powershell-execution.md
 │   ├── hunting-cmd-execution.md
-│   └── screenshots/
-├── part2-process-trees-and-persistence/
 │   ├── hunting-process-trees.md
-│   ├── hunting-persistence-artifacts.md
+│   └── screenshots/
+├── part2-persistence/
 │   ├── hunting-persistence-registry-run-keys.md
 │   ├── hunting-persistence-lookup-tables.md
 │   ├── hunting-defense-evasion-artifacts.md
