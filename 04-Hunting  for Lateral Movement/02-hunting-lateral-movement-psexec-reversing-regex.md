@@ -33,7 +33,7 @@ index="aa15cbf9" source="xmlwineventlog:system" EventCode=7045
 | table _time, Computer, AccountName, ServiceName, ImagePath
 ```
 
-![Screenshot placeholder: regex match on 4-letter service names](screenshots/1b-regex-4letter-servicename.png)
+![Screenshot placeholder: regex match on 4-letter service names](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/50b7f9277ba07942a3f9ecb69cca5b517b2cfe23/04-Hunting%20%20for%20Lateral%20Movement/Media/psexec(reversing%20regex%20)/step1.png)
 
 | Time | Computer | AccountName | ServiceName | ImagePath |
 |---|---|---|---|---|
@@ -47,7 +47,7 @@ index="aa15cbf9" source="xmlwineventlog:microsoft-windows-sysmon/operational" Ev
 | table _time, Computer, User, TargetObject, Details, Image
 ```
 
-![Screenshot placeholder: regex match on 4-letter service registry key](screenshots/1b-regex-4letter-registry.png)
+![Screenshot placeholder: regex match on 4-letter service registry key](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/50b7f9277ba07942a3f9ecb69cca5b517b2cfe23/04-Hunting%20%20for%20Lateral%20Movement/Media/psexec(reversing%20regex%20)/step2.png)
 
 | Time | Computer | User | TargetObject | Details | Image |
 |---|---|---|---|---|---|
@@ -61,7 +61,7 @@ index="aa15cbf9" source="xmlwineventlog:system" EventCode=7045
 | table _time, Computer, AccountName, ServiceName, ImagePath
 ```
 
-![Screenshot placeholder: regex match on 8-letter binary name](screenshots/1b-regex-8letter-binary.png)
+![Screenshot placeholder: regex match on 8-letter binary name](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/dd182bead51b396b919800f38efdaaa5f3a5eba2/04-Hunting%20%20for%20Lateral%20Movement/Media/psexec(reversing%20regex%20)/step3.png)
 
 | Time | Computer | AccountName | ServiceName | ImagePath |
 |---|---|---|---|---|
@@ -76,7 +76,7 @@ TargetObject="HKLM\System\CurrentControlSet\Services\*\ImagePath"
 | table _time, Computer, User, TargetObject, Details, Image
 ```
 
-![Screenshot placeholder: regex match on 8-letter binary in registry Details](screenshots/1b-regex-8letter-registry.png)
+![Screenshot placeholder: regex match on 8-letter binary in registry Details](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/dd182bead51b396b919800f38efdaaa5f3a5eba2/04-Hunting%20%20for%20Lateral%20Movement/Media/psexec(reversing%20regex%20)/step4.png)
 
 | Time | Computer | User | TargetObject | Details | Image |
 |---|---|---|---|---|---|
@@ -92,7 +92,7 @@ index="aa15cbf9" source="xmlwineventlog:microsoft-windows-sysmon/operational" Ev
 
 I scoped this specifically to files created directly in `C:\Windows\` — not a subfolder — since that's where this tool drops its binary by default, and it kept the results limited to genuinely relevant hits.
 
-![Screenshot placeholder: regex match on 8-letter exe file drop](screenshots/1b-regex-8letter-filedrop.png)
+![Screenshot placeholder: regex match on 8-letter exe file drop](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/dd182bead51b396b919800f38efdaaa5f3a5eba2/04-Hunting%20%20for%20Lateral%20Movement/Media/psexec(reversing%20regex%20)/step5.png)
 
 | Time | Computer | User | TargetFilename | Image |
 |---|---|---|---|---|
