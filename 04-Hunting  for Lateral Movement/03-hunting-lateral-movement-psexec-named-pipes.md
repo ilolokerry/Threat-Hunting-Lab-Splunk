@@ -24,7 +24,7 @@ index="aa15cbf9" source="xmlwineventlog:microsoft-windows-sysmon/operational"
 
 Sysmon Event ID 17 logs pipe creation, and Event ID 18 logs pipe connection — searching both together shows the full lifecycle of each named pipe.
 
-![Screenshot placeholder: RemCom named pipe creation and connection events](screenshots/1c-remcom-pipe-events.png)
+![Screenshot placeholder: RemCom named pipe creation and connection events](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/9317fd666dc9ea522a9ecf61dcf0358dc59c9a01/04-Hunting%20%20for%20Lateral%20Movement/Media/pipe/step1.png)
 
 | Time | EventID | EventType | PipeName | Image | ProcessId |
 |---|---|---|---|---|---|
