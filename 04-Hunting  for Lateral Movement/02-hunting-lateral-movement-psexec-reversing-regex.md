@@ -43,7 +43,7 @@ index="aa15cbf9" source="xmlwineventlog:system" EventCode=7045
 
 ```spl
 index="aa15cbf9" source="xmlwineventlog:microsoft-windows-sysmon/operational" EventID=13
-| regex TargetObject="HKLM\\System\\CurrentControlSet\\Services\\[A-Za-z]{4}\\ImagePath"
+| regex TargetObject="HKLM\\\\System\\\\CurrentControlSet\\\\Services\\\\[A-Za-z]{4}\\\\ImagePath"
 | table _time, Computer, User, TargetObject, Details, Image
 ```
 
@@ -57,7 +57,7 @@ index="aa15cbf9" source="xmlwineventlog:microsoft-windows-sysmon/operational" Ev
 
 ```spl
 index="aa15cbf9" source="xmlwineventlog:system" EventCode=7045
-| regex ImagePath=".\\[A-Za-z]{8}\.exe$"
+| regex ImagePath=".\\\\[A-Za-z]{8}\\.exe$"
 | table _time, Computer, AccountName, ServiceName, ImagePath
 ```
 
@@ -72,7 +72,7 @@ index="aa15cbf9" source="xmlwineventlog:system" EventCode=7045
 ```spl
 index="aa15cbf9" source="xmlwineventlog:microsoft-windows-sysmon/operational" EventID=13
 TargetObject="HKLM\System\CurrentControlSet\Services\*\ImagePath"
-| regex Details=".*\\[A-Za-z]{8}\.exe"
+| regex Details=".*\\\\[A-Za-z]{8}\\.exe"
 | table _time, Computer, User, TargetObject, Details, Image
 ```
 
@@ -86,7 +86,7 @@ TargetObject="HKLM\System\CurrentControlSet\Services\*\ImagePath"
 
 ```spl
 index="aa15cbf9" source="xmlwineventlog:microsoft-windows-sysmon/operational" EventID=11
-| regex TargetFilename="C:\\Windows\\[A-Za-z]{8}\.exe"
+| regex TargetFilename="C:\\\\Windows\\\\[A-Za-z]{8}\\.exe"
 | table _time, Computer, User, TargetFilename, Image
 ```
 
