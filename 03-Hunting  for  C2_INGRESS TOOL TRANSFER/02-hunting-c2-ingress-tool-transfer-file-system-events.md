@@ -17,7 +17,7 @@ TargetFilename="C:\ProgramData\*")
 | sort -_time
 ```
 
-![Screenshot placeholder: file creation events in common drop locations](screenshots/1b-common-drop-locations.png)
+![Screenshot placeholder: file creation events in common drop locations](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/d54dd53d54e16fa30c917eebdabcef4f28ffa4c8/03-Hunting%20%20for%20%20C2_INGRESS%20TOOL%20TRANSFER/Media/file%20system%20events/step1.png)
 
 This returned mostly expected, benign activity: a batch of Windows diagnostic script files (`SDIAG_...\TS_*.ps1`, `RS_*.ps1`, `DiagPackage.dll`) written by `taskhostw.exe`, and a Microsoft Edge shortcut written by the Edge installer to the Start Menu. Nothing in these three common drop locations stood out as suspicious.
 
@@ -31,7 +31,7 @@ TargetFilename="C:\Windows\*.exe"
 | sort -_time
 ```
 
-![Screenshot placeholder: executable files dropped under C:\Windows](screenshots/1b-windows-exe-drops.png)
+![Screenshot placeholder: executable files dropped under C:\Windows](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/d54dd53d54e16fa30c917eebdabcef4f28ffa4c8/03-Hunting%20%20for%20%20C2_INGRESS%20TOOL%20TRANSFER/Media/file%20system%20events/step2.png)
 
 This search was far more productive:
 
@@ -51,8 +51,6 @@ EventID=11
 | stats count by Image
 ```
 
-![Screenshot placeholder: file creation counts by image](screenshots/1b-file-creation-counts.png)
-
 Aggregating by `Image` made it easy to separate expected high-volume noise (`svchost.exe` with 1043 file creation events, `mscorsvw.exe` with 69, Windows Update components) from the small number of events tied to `certutil.exe` (2) and the standalone `System` entry (1) — both of which warranted a closer look and were already explained by the previous step.
 
 ### Step 4: Check files created specifically by PowerShell
@@ -65,7 +63,7 @@ Image="C:\WINDOWS\*\WindowsPowerShell\v1.0\powershell.exe"
 | sort -_time
 ```
 
-![Screenshot placeholder: files created by powershell.exe](screenshots/1b-powershell-file-creation.png)
+![Screenshot placeholder: file creation counts by image](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/d54dd53d54e16fa30c917eebdabcef4f28ffa4c8/03-Hunting%20%20for%20%20C2_INGRESS%20TOOL%20TRANSFER/Media/file%20system%20events/step4.png)
 
 Most of these results were `__PSScriptPolicyTest_*.ps1` files under `C:\Windows\SystemTemp\` — this is expected, benign PowerShell script policy testing behavior, not malicious activity. One entry stood apart from the rest:
 
