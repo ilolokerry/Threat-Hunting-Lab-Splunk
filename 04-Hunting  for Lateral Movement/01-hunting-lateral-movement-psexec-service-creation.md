@@ -13,7 +13,7 @@ index="aa15cbf9" source="xmlwineventlog:system" EventCode=7045
 | table _time, Computer, AccountName, ServiceName, ImagePath, ServiceType, StartType
 ```
 
-![Screenshot placeholder: Event ID 7045 new service created](screenshots/1a-service-7045.png)
+![Screenshot placeholder: Event ID 7045 new service created](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/50b7f9277ba07942a3f9ecb69cca5b517b2cfe23/04-Hunting%20%20for%20Lateral%20Movement/Media/psexec(service%20creation)/step1.png)
 
 | Time | Computer | AccountName | ServiceName | ImagePath | ServiceType | StartType |
 |---|---|---|---|---|---|---|
@@ -32,7 +32,7 @@ TargetObject="HKLM\System\CurrentControlSet\Services\*\ImagePath"
 | sort -_time
 ```
 
-![Screenshot placeholder: registry service ImagePath keys](screenshots/1a-registry-imagepath-keys.png)
+![Screenshot placeholder: registry service ImagePath keys](https://github.com/ilolokerry/Threat-Hunting-Lab-Splunk/blob/50b7f9277ba07942a3f9ecb69cca5b517b2cfe23/04-Hunting%20%20for%20Lateral%20Movement/Media/psexec(service%20creation)/step2.png)
 
 | Computer | User | TargetObject | Details | Image | ProcessId |
 |---|---|---|---|---|---|
