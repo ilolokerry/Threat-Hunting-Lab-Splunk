@@ -36,13 +36,11 @@ threat-hunting-lab-splunk/
 │   ├── hunting-defense-evasion-artifacts.md
 │   └── screenshots/
 ├── part3-command-and-control/
-│   ├── hunting-c2-artifacts.md
 │   ├── hunting-c2-ingress-tool-transfer-lolbas.md
 │   ├── hunting-c2-ingress-tool-transfer-file-system-events.md
 │   ├── hunting-c2-ingress-tool-transfer-network-connection-events.md
 │   └── screenshots/
 └── part4-lateral-movement/
-    ├── hunting-lateral-movement-artifacts.md
     ├── hunting-lateral-movement-psexec-service-creation.md
     ├── hunting-lateral-movement-psexec-reversing-regex.md
     ├── hunting-lateral-movement-psexec-named-pipes.md
